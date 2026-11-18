@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GTA 6 to Retro Pong</title>
+    <title>GTA VI - PS5 Launch Edition (Der lächelnde Fux Skit)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Schriftarten Import */
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        /* Schriftarten Import für GTA-Vibe, PS5-UI und 1972er Retro-Pong */
+        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&family=Press+Start+2P&display=swap');
         
         body, html {
             margin: 0;
@@ -15,366 +15,929 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: black;
+            background-color: #050508;
             user-select: none;
             -webkit-user-select: none;
+            font-family: 'Inter', sans-serif;
+            color: white;
         }
 
-        /* GTA Startbildschirm Styling */
-        #gta-screen {
-            background-image: url('bild2.jpg');
+        /* Ken Burns Effekt für die 3 hochgeladenen GTA 6 Bilder */
+        .slide-bg {
+            position: absolute;
+            inset: 0;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            transition: filter 0.2s ease;
+            opacity: 0;
+            transform: scale(1.0);
+            transition: opacity 1.5s ease-in-out, transform 12s linear;
+            will-change: transform, opacity;
         }
 
-        .gta-text {
-            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 20px rgba(255, 0, 255, 0.8);
-            letter-spacing: 2px;
+        .slide-bg.active {
+            opacity: 1;
+            transform: scale(1.12);
         }
 
-        /* Intensive Glitch / Screen Tearing Effekte */
-        .glitch-effect {
-            animation: shake 0.2s infinite, glitch-colors 0.1s infinite, tear 0.05s infinite;
-            filter: contrast(200%) saturate(300%) hue-rotate(90deg) invert(100%);
+        /* Vice City Neon & GTA Typografie */
+        .gta-title-font {
+            font-family: 'Anton', Impact, sans-serif;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 0 4px 0 #000, 0 0 25px rgba(255, 0, 160, 0.85), 0 0 50px rgba(0, 240, 255, 0.5);
         }
 
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-5px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        .vice-gradient-text {
+            background: linear-gradient(90deg, #ff2a85 0%, #ff8a00 50%, #00f0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        @keyframes glitch-colors {
-            0% { filter: hue-rotate(0deg) invert(0%); }
-            25% { filter: hue-rotate(90deg) invert(100%); opacity: 0.8;}
-            50% { filter: hue-rotate(180deg) invert(0%); opacity: 1;}
-            75% { filter: hue-rotate(270deg) invert(100%); opacity: 0.5;}
-            100% { filter: hue-rotate(360deg) invert(0%); opacity: 1;}
+        .ps-btn-x {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: 2px solid #93c5fd;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.9);
+            font-weight: 800;
+            font-family: sans-serif;
+            color: white;
+            margin: 0 6px;
         }
 
-        @keyframes tear {
-            0% { clip-path: polygon(0 0, 100% 0, 100% 10%, 0 10%); transform: translateX(10px); }
-            20% { clip-path: polygon(0 20%, 100% 20%, 100% 30%, 0 30%); transform: translateX(-15px); }
-            40% { clip-path: polygon(0 40%, 100% 40%, 100% 50%, 0 50%); transform: translateX(20px); }
-            60% { clip-path: polygon(0 60%, 100% 60%, 100% 70%, 0 70%); transform: translateX(-10px); }
-            80% { clip-path: polygon(0 80%, 100% 80%, 100% 90%, 0 90%); transform: translateX(25px); }
-            100% { clip-path: polygon(0 90%, 100% 90%, 100% 100%, 0 100%); transform: translateX(-5px); }
+        /* PS5 Notification Toast Animation */
+        @keyframes toastSlideIn {
+            0% { transform: translateX(120%); opacity: 0; }
+            12% { transform: translateX(0); opacity: 1; }
+            85% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(120%); opacity: 0; }
         }
 
-        /* Scanlines Overlay */
+        .ps5-toast {
+            animation: toastSlideIn 8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            background: rgba(18, 20, 28, 0.88);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Brutaler Glitch & Screen Tearing Effekt für State 3 */
+        .glitch-chaos {
+            animation: shakeHard 0.08s infinite, colorChaos 0.12s infinite, sliceTear 0.09s infinite !important;
+        }
+
+        @keyframes shakeHard {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            20% { transform: translate(-25px, 12px) rotate(-2deg) scale(1.04); }
+            40% { transform: translate(22px, -18px) rotate(3deg) scale(0.97); }
+            60% { transform: translate(-18px, -12px) rotate(-3deg) scale(1.08); }
+            80% { transform: translate(28px, 16px) rotate(2deg) scale(0.95); }
+            100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+        }
+
+        @keyframes colorChaos {
+            0% { filter: hue-rotate(0deg) contrast(150%) saturate(200%); }
+            25% { filter: hue-rotate(120deg) invert(100%) contrast(300%); }
+            50% { filter: hue-rotate(240deg) saturate(500%) brightness(1.6); }
+            75% { filter: hue-rotate(310deg) invert(80%) contrast(250%); }
+            100% { filter: hue-rotate(360deg) contrast(100%); }
+        }
+
+        @keyframes sliceTear {
+            0% { clip-path: inset(0 0 0 0); }
+            25% { clip-path: polygon(0 5%, 100% 0, 100% 35%, 0 42%, 0 65%, 100% 58%, 100% 100%, 0 92%); }
+            50% { clip-path: polygon(0 15%, 100% 22%, 100% 48%, 0 44%, 0 85%, 100% 75%, 100% 95%, 0 100%); }
+            75% { clip-path: inset(8% 0 12% 0); }
+            100% { clip-path: inset(0 0 0 0); }
+        }
+
+        /* Retro CRT TV & Scanlines für 1972 Pong */
+        .crt-screen {
+            background: radial-gradient(circle at center, #081c0c 0%, #020804 100%);
+            box-shadow: inset 0 0 90px rgba(0, 0, 0, 0.95);
+        }
+
         .scanlines {
             background: linear-gradient(
                 to bottom,
                 rgba(255,255,255,0),
                 rgba(255,255,255,0) 50%,
-                rgba(0,0,0,0.2) 50%,
-                rgba(0,0,0,0.2)
+                rgba(0,0,0,0.45) 50%,
+                rgba(0,0,0,0.45)
             );
-            background-size: 100% 4px;
+            background-size: 100% 5px;
             pointer-events: none;
         }
 
-        /* Pong Screen */
-        #pong-container {
-            display: none;
-            width: 100%;
-            height: 100%;
-            background-color: black;
-            position: relative;
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-
         .pong-font {
-            font-family: 'Press Start 2P', cursive;
+            font-family: 'Press Start 2P', monospace;
         }
 
-        /* Mobile Controls Overlay */
-        #mobile-controls {
-            display: none; /* Shows only on touch devices ideally, or handled via full screen touch */
+        /* Pulsierender Ladebalken Glow */
+        .loading-bar-glow {
+            box-shadow: 0 0 20px #ff2a85, 0 0 40px #00f0ff;
         }
     </style>
 </head>
-<body>
+<body class="relative w-full h-full overflow-hidden">
 
-    <!-- 1. GTA 6 Startbildschirm -->
-    <div id="gta-screen" class="absolute inset-0 flex flex-col items-center justify-end pb-24 cursor-pointer z-10">
-        <!-- Scanlines effect on top of GTA -->
-        <div class="absolute inset-0 scanlines opacity-30"></div>
-        
-        <h1 class="gta-text text-3xl md:text-5xl lg:text-6xl font-bold text-white animate-pulse mb-8 z-20">
-            PRESS 'X' TO START
-        </h1>
-        <p class="text-white opacity-75 font-sans text-sm md:text-base z-20 hidden md:block">
-            oder klicke auf den Bildschirm
+    <!-- =========================================================================
+         GEHEIMES REGIE-PANEL FÜR DEIN VIDEO (Ein-/Ausblenden mit Taste 'C')
+         ========================================================================= -->
+    <div id="director-panel" class="hidden fixed top-4 left-4 z-50 w-96 max-w-[92vw] bg-zinc-900/95 border border-pink-500/60 rounded-2xl p-5 shadow-2xl backdrop-blur-xl text-sm">
+        <div class="flex items-center justify-between border-b border-zinc-700 pb-3 mb-3">
+            <div class="flex items-center gap-2">
+                <span class="text-xl">🎬</span>
+                <h3 class="font-bold text-pink-400 uppercase tracking-wider">Fux Video-Regie (Taste C)</h3>
+            </div>
+            <button id="close-director" class="text-zinc-400 hover:text-white px-2 py-1 rounded bg-zinc-800">✕</button>
+        </div>
+
+        <p class="text-xs text-zinc-300 mb-3">
+            Wähle den Gag, der nach dem 99%-Absturz auf dem Bildschirm erscheint (auch schnell per Taste <kbd class="px-1.5 py-0.5 bg-zinc-800 rounded border border-zinc-600">1</kbd>, <kbd class="px-1.5 py-0.5 bg-zinc-800 rounded border border-zinc-600">2</kbd>, <kbd class="px-1.5 py-0.5 bg-zinc-800 rounded border border-zinc-600">3</kbd> wählbar):
         </p>
+
+        <div class="space-y-2 mb-4">
+            <button onclick="selectPreset(0)" id="preset-btn-0" class="w-full text-left p-2.5 rounded-lg border border-pink-500 bg-pink-500/20 text-xs transition">
+                <strong>[1] Grafikkarte & Release 2038:</strong> Deine PS5 hat vor Aufregung gekündigt + Release auf 2038 verschoben.
+            </button>
+            <button onclick="selectPreset(1)" id="preset-btn-1" class="w-full text-left p-2.5 rounded-lg border border-zinc-700 bg-zinc-800/70 hover:bg-zinc-800 text-xs transition">
+                <strong>[2] Fitness / Liegestütze-Troll:</strong> Sofa-Modus verweigert! Dir fehlen heute noch 10'000 Schritte & 50 Liegestütze.
+            </button>
+            <button onclick="selectPreset(2)" id="preset-btn-2" class="w-full text-left p-2.5 rounded-lg border border-zinc-700 bg-zinc-800/70 hover:bg-zinc-800 text-xs transition">
+                <strong>[3] Schweizer Internet / Disketten:</strong> Bitte lege Diskette 1 von 48'500 ein oder spiele 1972er Tischtennis.
+            </button>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-xs text-zinc-400 mb-1">Eigener Wunsch-Text für die Fehlermeldung:</label>
+            <textarea id="custom-joke-input" rows="3" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2 text-xs text-white focus:border-pink-500 focus:outline-none"></textarea>
+        </div>
+
+        <div class="flex items-center justify-between gap-2 pt-2 border-t border-zinc-800 text-xs text-zinc-400">
+            <span><kbd class="bg-zinc-800 px-1.5 py-0.5 rounded text-white">F</kbd> Vollbild</span>
+            <span><kbd class="bg-zinc-800 px-1.5 py-0.5 rounded text-white">R</kbd> Neustart</span>
+            <span><kbd class="bg-zinc-800 px-1.5 py-0.5 rounded text-white">Leertaste / X</kbd> Weiter</span>
+        </div>
     </div>
 
-    <!-- Weisser Blitz Overlay -->
-    <div id="flash-overlay" class="absolute inset-0 bg-white opacity-0 pointer-events-none z-30 transition-opacity duration-75"></div>
+    <!-- Dezenter Mini-Button oben links (verschwindet im Vollbild, falls man mit Maus klickt) -->
+    <div id="quick-controls" class="fixed top-3 left-3 z-40 flex items-center gap-2 opacity-25 hover:opacity-100 transition-opacity duration-300">
+        <button onclick="toggleDirector()" class="bg-black/70 hover:bg-pink-600 text-white text-xs px-2.5 py-1.5 rounded-lg border border-white/20 backdrop-blur-md">
+            🎬 Regie (C)
+        </button>
+        <button onclick="toggleFullscreen()" class="bg-black/70 hover:bg-blue-600 text-white text-xs px-2.5 py-1.5 rounded-lg border border-white/20 backdrop-blur-md">
+            ⛶ Vollbild (F)
+        </button>
+    </div>
 
-    <!-- 2. Retro Pong Spiel -->
-    <div id="pong-container" class="z-0">
-        <canvas id="pong-canvas"></canvas>
+    <!-- =========================================================================
+         STATE 1 & 2: AUTHENTISCHER GTA 6 PS5 START- UND LADEBILDSCHIRM
+         ========================================================================= -->
+    <div id="gta-main-wrapper" class="relative w-full h-full flex flex-col justify-between overflow-hidden cursor-pointer z-10">
+        
+        <!-- Hintergrund-Slideshow mit deinen 3 GTA 6 Bildern -->
+        <div id="slideshow-container" class="absolute inset-0 bg-black">
+            <div class="slide-bg active" style="background-image: url('bild2.jpg'), radial-gradient(circle, #ff007f, #1a0033);"></div>
+            <div class="slide-bg" style="background-image: url('bild3.jpg'), radial-gradient(circle, #ff6600, #1a0033);"></div>
+            <div class="slide-bg" style="background-image: url('bild1.jpg'), radial-gradient(circle, #00f0ff, #1a0033);"></div>
+            <!-- Dunkler Verlauf unten & oben für perfekte Lesbarkeit -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/60"></div>
+        </div>
+
+        <!-- TOP BAR: PS5 Header & "Der lächelnde Fux" Login Toast -->
+        <div class="relative z-20 flex items-start justify-between p-6 md:p-10">
+            <!-- Links: PS5 Pro Early Access Badge -->
+            <div class="flex items-center gap-3 bg-black/65 backdrop-blur-md border border-white/15 px-4 py-2 rounded-full shadow-lg">
+                <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                <span class="text-xs md:text-sm font-bold tracking-widest uppercase text-zinc-200">
+                    PS5 PRO <span class="text-pink-400 mx-1">•</span> GTA VI EARLY CREATOR BUILD v0.99
+                </span>
+            </div>
+
+            <!-- Rechts: Offizieller PS5 Notification Toast für "Der lächelnde Fux" -->
+            <div id="ps5-toast" class="ps5-toast flex items-center gap-3.5 px-5 py-3 rounded-2xl">
+                <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-orange-500 to-pink-500 flex items-center justify-center text-2xl shadow-inner border border-white/30">
+                    🦊
+                </div>
+                <div>
+                    <div class="text-[11px] uppercase tracking-wider text-cyan-400 font-semibold">PSN-Profil angemeldet</div>
+                    <div class="text-sm md:text-base font-extrabold text-white">Der lächelnde Fux</div>
+                    <div class="text-[11px] text-zinc-400">13 Jahre Wartezeit abgeschlossen 🏆</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER / BOTTOM AREA: State 1 (Press X) & State 2 (Loading Bar) -->
+        <div class="relative z-20 flex flex-col items-center justify-end px-6 pb-12 md:pb-16 w-full max-w-5xl mx-auto">
+            
+            <!-- STATE 1 UI: Start-Aufforderung -->
+            <div id="state1-ui" class="flex flex-col items-center text-center transition-all duration-500">
+                <div class="mb-3 px-4 py-1 rounded-full bg-pink-500/20 border border-pink-400/50 text-pink-300 text-xs md:text-sm font-semibold uppercase tracking-widest backdrop-blur-sm">
+                    Willkommen in Leonida • Vice City
+                </div>
+                <h1 class="gta-title-font text-4xl sm:text-6xl md:text-7xl text-white mb-6 tracking-wide">
+                    GRAND THEFT AUTO <span class="vice-gradient-text">VI</span>
+                </h1>
+
+                <button id="start-btn" class="group relative inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-black/75 border-2 border-pink-500/80 hover:border-cyan-400 shadow-[0_0_35px_rgba(255,42,133,0.6)] transition-all duration-300 hover:scale-105 active:scale-95">
+                    <span class="text-lg md:text-2xl font-extrabold tracking-wider text-white flex items-center">
+                        DRÜCKE <span class="ps-btn-x animate-bounce">✕</span> ZUM STARTEN
+                    </span>
+                </button>
+                <p class="mt-3 text-xs md:text-sm text-zinc-300/80">
+                    (Tastatur: <kbd class="bg-white/10 px-1.5 py-0.5 rounded">X</kbd>, <kbd class="bg-white/10 px-1.5 py-0.5 rounded">Leertaste</kbd> oder Mausklick)
+                </p>
+            </div>
+
+            <!-- STATE 2 UI: Der dramatische 99% Ladebildschirm (initial versteckt) -->
+            <div id="state2-ui" class="hidden w-full flex-col items-center">
+                <div class="w-full flex flex-col md:flex-row md:items-end justify-between mb-3 gap-2">
+                    <div class="flex items-center gap-3">
+                        <!-- Ladering -->
+                        <div class="w-6 h-6 rounded-full border-4 border-pink-500 border-t-cyan-400 animate-spin"></div>
+                        <span id="loading-status-text" class="text-base md:text-xl font-bold text-white tracking-wide drop-shadow">
+                            Lade Vice City Weltkarte (148.4 GB)...
+                        </span>
+                    </div>
+                    <div id="loading-percent-text" class="gta-title-font text-3xl md:text-5xl text-cyan-300">
+                        0%
+                    </div>
+                </div>
+
+                <!-- Fortschrittsbalken -->
+                <div class="w-full h-4 md:h-5 bg-black/80 rounded-full overflow-hidden border border-white/25 p-0.5">
+                    <div id="loading-bar-fill" class="h-full w-0 rounded-full bg-gradient-to-r from-pink-500 via-orange-400 to-cyan-400 loading-bar-glow transition-all duration-150"></div>
+                </div>
+
+                <!-- Lustiger Tipp unten -->
+                <div id="loading-tip-text" class="mt-3 text-xs md:text-sm text-zinc-300 italic text-center">
+                    Tipp: Halte deinen Controller gut fest – die Grafik ist so realistisch, dass dein Fernseher schwitzen könnte.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         STATE 4: SYSTEM-ABSTURZ / TROLL FEHLERMELDUNG (Vor Pong-Start)
+         ========================================================================= -->
+    <div id="state4-modal" class="hidden fixed inset-0 z-30 bg-black/95 flex items-center justify-center p-4">
+        <div class="scanlines absolute inset-0"></div>
+        
+        <div class="relative z-10 max-w-2xl w-full bg-zinc-950 border-4 border-red-500 rounded-2xl p-6 md:p-10 shadow-[0_0_80px_rgba(239,68,68,0.65)] text-center">
+            
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/20 border border-red-500 text-red-400 text-xs md:text-sm font-bold uppercase tracking-widest mb-4 animate-pulse">
+                ⚠️ KRITISCHER PS5 SYSTEM-FEHLER (CODE: FUX-1972)
+            </div>
+
+            <h2 class="gta-title-font text-3xl md:text-5xl text-white mb-5">
+                ZU VIEL HYPE ERKANNT!
+            </h2>
+
+            <div id="crash-message-box" class="bg-black/90 border border-zinc-800 rounded-xl p-5 mb-6 text-base md:text-xl text-zinc-200 leading-relaxed font-medium whitespace-pre-line">
+                <!-- Wird dynamisch per JS gefüllt -->
+            </div>
+
+            <!-- Auto-Downgrade Box -->
+            <div class="bg-emerald-950/50 border border-emerald-500/60 rounded-xl p-4 mb-6 text-emerald-300 pong-font text-xs md:text-sm leading-6">
+                >> STARTE NOTFALL-DOWNGRADE:<br>
+                "GRAND THEFT PING-PONG (1972 EDITION)"
+            </div>
+
+            <button onclick="startPongNow()" class="w-full md:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white font-extrabold text-base md:text-lg shadow-lg transition transform hover:scale-105">
+                JETZT 1972er VERSION SPIELEN <span class="ps-btn-x ml-2">✕</span>
+            </button>
+            <div id="crash-countdown" class="mt-3 text-xs text-zinc-400">
+                Drücke [X] oder [Leertaste] zum Starten (oder automatischer Start in <span id="countdown-sec">6</span>s)
+            </div>
+        </div>
+    </div>
+
+    <!-- Weisser / Farbiger Stroboskop-Blitz für den Übergang -->
+    <div id="flash-overlay" class="fixed inset-0 bg-white opacity-0 pointer-events-none z-40 transition-opacity duration-75"></div>
+
+    <!-- =========================================================================
+         STATE 5: RETRO 1972 PONG ("GRAND THEFT PING-PONG VI")
+         ========================================================================= -->
+    <div id="pong-container" class="hidden fixed inset-0 z-20 crt-screen flex flex-col justify-between">
+        <!-- CRT Scanlines über dem gesamten Spiel -->
+        <div class="scanlines absolute inset-0 z-30"></div>
+
+        <!-- Retro Header -->
+        <div class="relative z-20 flex flex-wrap items-center justify-between px-4 md:px-10 pt-4 pb-2 border-b-2 border-emerald-500/40 bg-black/60 pong-font text-emerald-400">
+            <div class="text-xs md:text-base">
+                🦊 DER LÄCHELNDE FUX: <span id="score-player" class="text-white">0</span>
+            </div>
+            <div class="text-[10px] md:text-xs text-pink-400 text-center my-1">
+                ★ GTA VI: 1972 UR-EDITION (64 KB RAM) ★
+            </div>
+            <div class="text-xs md:text-base">
+                ROCKSTAR SERVER: <span id="score-cpu" class="text-white">0</span>
+            </div>
+        </div>
+
+        <!-- Lustiger Live-Kommentar Banner mitten im Spiel -->
+        <div id="pong-commentary" class="relative z-20 text-center py-2 pong-font text-xs md:text-base text-yellow-300 tracking-wider min-h-[2.2rem]">
+            13 JAHRE GEWARTET FÜR DAS HIER?! BEWEGE MIT [W/S] ODER MAUS!
+        </div>
+
+        <!-- Spielfeld Canvas -->
+        <div class="relative flex-1 w-full overflow-hidden">
+            <canvas id="pong-canvas" class="w-full h-full block"></canvas>
+        </div>
+
+        <!-- Footer mit Neustart für weiteren Video-Take & Kanal-Badge -->
+        <div class="relative z-40 flex flex-wrap items-center justify-between gap-3 px-6 py-3 bg-black/80 border-t-2 border-emerald-500/40 text-xs">
+            <div class="flex items-center gap-3">
+                <button onclick="resetEverything()" class="px-4 py-2 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-bold shadow transition">
+                    🔄 Neuer Video-Take (Taste R)
+                </button>
+                <span class="text-zinc-400 hidden sm:inline">Steuerung: Pfeiltasten / W & S / Maus / Touch</span>
+            </div>
+
+            <a href="https://www.youtube.com/channel/UCHzPxlwwg7WCODmxIpCTGNQ" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-orange-500/50 text-orange-300 font-bold transition">
+                <span>🦊 YouTube: Der lächelnde Fux</span>
+            </a>
+        </div>
     </div>
 
     <script>
-        // --- DOM Elements ---
-        const gtaScreen = document.getElementById('gta-screen');
-        const pongContainer = document.getElementById('pong-container');
-        const canvas = document.getElementById('pong-canvas');
-        const ctx = canvas.getContext('2d');
-        const flashOverlay = document.getElementById('flash-overlay');
+        // =========================================================================
+        // 1. WEB AUDIO SYNTHESIZER (Keine externen MP3s nötig, funktioniert sofort!)
+        // =========================================================================
+        let audioCtx = null;
 
-        let isTransitioning = false;
-        let gameRunning = false;
-
-        // --- Transition Logic (GTA -> Glitch -> Pong) ---
-        function triggerGlitch() {
-            if (isTransitioning) return;
-            isTransitioning = true;
-
-            // 1. Start Glitch Visuals on the GTA Screen
-            gtaScreen.classList.add('glitch-effect');
-            
-            // Random white flashes
-            let flashInterval = setInterval(() => {
-                flashOverlay.style.opacity = Math.random() > 0.5 ? '0.8' : '0';
-            }, 100);
-
-            // 2. End Glitch and show Pong after ~2.5 seconds
-            setTimeout(() => {
-                clearInterval(flashInterval);
-                flashOverlay.style.opacity = '1'; // Final white flash
-                
-                setTimeout(() => {
-                    gtaScreen.style.display = 'none'; // Hide GTA
-                    pongContainer.style.display = 'block'; // Show Pong
-                    flashOverlay.style.opacity = '0'; // Fade out flash
-                    
-                    // Initialize and start Pong
-                    initPong();
-                    gameRunning = true;
-                    gameLoop();
-                }, 200);
-
-            }, 2500);
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
         }
 
-        // Event Listeners for starting the transition
-        gtaScreen.addEventListener('click', triggerGlitch);
-        document.addEventListener('keydown', (e) => {
-            if ((e.key === 'x' || e.key === 'X' || e.key === 'Enter') && !isTransitioning) {
-                triggerGlitch();
+        // Edler PS5-artiger Menü-Klick-Sound
+        function playPS5Click() {
+            initAudio();
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(520, now);
+            osc.frequency.exponentialRampToValueAtTime(880, now + 0.09);
+            osc.frequency.exponentialRampToValueAtTime(440, now + 0.25);
+
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.26);
+        }
+
+        // Brutaler Glitch- / System-Crash-Sound
+        function playGlitchNoise() {
+            initAudio();
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = Math.random() > 0.5 ? 'sawtooth' : 'square';
+            osc.frequency.setValueAtTime(80 + Math.random() * 900, now);
+            osc.frequency.setValueAtTime(40 + Math.random() * 1400, now + 0.04);
+
+            gain.gain.setValueAtTime(0.22, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.09);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.09);
+        }
+
+        // Fehler-Alarmton für das Absturz-Fenster
+        function playErrorSiren() {
+            initAudio();
+            const now = audioCtx.currentTime;
+            [0, 0.22, 0.44].forEach((offset) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now + offset);
+                osc.frequency.setValueAtTime(165, now + offset + 0.1);
+
+                gain.gain.setValueAtTime(0.25, now + offset);
+                gain.gain.exponentialRampToValueAtTime(0.008, now + offset + 0.19);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + offset);
+                osc.stop(now + offset + 0.2);
+            });
+        }
+
+        // Klassischer 1972 Atari Pong Piepton
+        function playPongBeep(freq = 440, duration = 0.07, type = 'square') {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, now);
+
+            gain.gain.setValueAtTime(0.18, now);
+            gain.gain.exponentialRampToValueAtTime(0.005, now + duration);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + duration);
+        }
+
+        // =========================================================================
+        // 2. ZUSTANDS-STEUERUNG & WITZ-PRESETS FÜR DAS VIDEO
+        // =========================================================================
+        const APP_STATE = {
+            TITLE: 'TITLE',
+            LOADING: 'LOADING',
+            GLITCH: 'GLITCH',
+            CRASH_MODAL: 'CRASH_MODAL',
+            PONG: 'PONG'
+        };
+
+        let currentState = APP_STATE.TITLE;
+
+        const jokePresets = [
+            "Deine Grafikkarte hat vor Aufregung gekündigt!\n\nAußerdem hat Rockstar den Release von GTA 6 soeben auf den 31. Februar 2038 verschoben.\n\nAls Entschädigung für 13 Jahre Wartezeit startet nun automatisch die flüssig laufende Ur-Version von 1972.",
+            "FEHLER: Sofa-Modus verweigert!\n\nLaut Fux-Fitness-Protokoll fehlen dir heute noch 10'000 Schritte und 50 Liegestütze, bevor Vice City freigeschaltet wird.\n\nZum Aufwärmen der Daumenmuskulatur startet jetzt: GTA 6 – Tischtennis Edition (1972).",
+            "SPEICHERPLATZ-FEHLER!\n\nGTA 6 benötigt 980 Terabyte freien Speicherplatz. Bitte lege jetzt Diskette 1 von 48'500 in deine PlayStation ein.\n\nÜberbrücke die Ladezeit mit einer hochmodernen Runde 8-Bit Ping-Pong!"
+        ];
+
+        let selectedPresetIndex = 0;
+        const customJokeInput = document.getElementById('custom-joke-input');
+        customJokeInput.value = jokePresets[0];
+
+        function selectPreset(index) {
+            selectedPresetIndex = index;
+            customJokeInput.value = jokePresets[index];
+            for (let i = 0; i < 3; i++) {
+                const btn = document.getElementById(`preset-btn-${i}`);
+                if (i === index) {
+                    btn.className = "w-full text-left p-2.5 rounded-lg border border-pink-500 bg-pink-500/20 text-xs transition";
+                } else {
+                    btn.className = "w-full text-left p-2.5 rounded-lg border border-zinc-700 bg-zinc-800/70 hover:bg-zinc-800 text-xs transition";
+                }
+            }
+        }
+
+        function toggleDirector() {
+            const panel = document.getElementById('director-panel');
+            panel.classList.toggle('hidden');
+        }
+
+        document.getElementById('close-director').addEventListener('click', toggleDirector);
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        // =========================================================================
+        // 3. HINTERGRUND-SLIDESHOW (bild2.jpg, bild3.jpg, bild1.jpg)
+        // =========================================================================
+        const slides = document.querySelectorAll('.slide-bg');
+        let currentSlide = 0;
+        setInterval(() => {
+            if (currentState === APP_STATE.TITLE || currentState === APP_STATE.LOADING) {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+        }, 5500);
+
+        // =========================================================================
+        // 4. ABLAUF: STATE 1 (START) -> STATE 2 (99% LOADING) -> STATE 3 (GLITCH)
+        // =========================================================================
+        const gtaWrapper = document.getElementById('gta-main-wrapper');
+        const state1UI = document.getElementById('state1-ui');
+        const state2UI = document.getElementById('state2-ui');
+        const loadingBarFill = document.getElementById('loading-bar-fill');
+        const loadingPercentText = document.getElementById('loading-percent-text');
+        const loadingStatusText = document.getElementById('loading-status-text');
+        const loadingTipText = document.getElementById('loading-tip-text');
+        const flashOverlay = document.getElementById('flash-overlay');
+        const state4Modal = document.getElementById('state4-modal');
+        const crashMessageBox = document.getElementById('crash-message-box');
+        const pongContainer = document.getElementById('pong-container');
+
+        let loadingTimer = null;
+        let glitchInterval = null;
+        let modalCountdownTimer = null;
+
+        function startSequence() {
+            if (currentState !== APP_STATE.TITLE) return;
+            currentState = APP_STATE.LOADING;
+            playPS5Click();
+
+            state1UI.classList.add('hidden');
+            state2UI.classList.remove('hidden');
+            state2UI.classList.add('flex');
+
+            let progress = 0;
+
+            loadingTimer = setInterval(() => {
+                // Bis 98% zügig, bei 99% dramatische Pause für dein Video-Gesicht!
+                if (progress < 35) {
+                    progress += 2;
+                    loadingStatusText.textContent = "Lade Vice City Texturen & Neon-Lichter (148 GB)...";
+                } else if (progress < 72) {
+                    progress += 2.5;
+                    loadingStatusText.textContent = "Poliere Sportwagen & füttere Alligatoren...";
+                } else if (progress < 98) {
+                    progress += 1.5;
+                    loadingStatusText.textContent = "Synchronisiere Hype-Level nach 13 Jahren Wartezeit...";
+                } else if (progress < 99) {
+                    progress = 99;
+                    loadingStatusText.textContent = "99% — Starte Mission 1: Willkommen in Vice City...";
+                    loadingTipText.textContent = "ACHTUNG: Grafikkarte erreicht Kernschmelz-Temperatur (480°C)...";
+                    
+                    // Nach 1.8 Sekunden bei 99% bricht das Chaos los!
+                    clearInterval(loadingTimer);
+                    setTimeout(triggerViolentGlitch, 1800);
+                }
+
+                const displayPct = Math.min(99, Math.floor(progress));
+                loadingPercentText.textContent = displayPct + "%";
+                loadingBarFill.style.width = displayPct + "%";
+            }, 95);
+        }
+
+        function triggerViolentGlitch() {
+            currentState = APP_STATE.GLITCH;
+            gtaWrapper.classList.add('glitch-chaos');
+            loadingStatusText.textContent = "FATAL ERROR: 0x1972_PONG_OVERFLOW #%$@!";
+            loadingPercentText.textContent = "99.9%";
+
+            // Stroboskop-Blitze + 8-Bit Glitch-Sound
+            glitchInterval = setInterval(() => {
+                playGlitchNoise();
+                const colors = ['#ffffff', '#ff007f', '#00f0ff', '#ff0000'];
+                flashOverlay.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                flashOverlay.style.opacity = Math.random() > 0.35 ? '0.85' : '0';
+            }, 95);
+
+            // Nach 2.4 Sekunden heftigem Flattern erscheint die Troll-Systemmeldung
+            setTimeout(() => {
+                clearInterval(glitchInterval);
+                gtaWrapper.classList.remove('glitch-chaos');
+                flashOverlay.style.backgroundColor = '#ffffff';
+                flashOverlay.style.opacity = '1';
+
+                setTimeout(() => {
+                    flashOverlay.style.opacity = '0';
+                    showCrashModal();
+                }, 180);
+            }, 2400);
+        }
+
+        function showCrashModal() {
+            currentState = APP_STATE.CRASH_MODAL;
+            playErrorSiren();
+
+            crashMessageBox.textContent = customJokeInput.value;
+            state4Modal.classList.remove('hidden');
+
+            let secondsLeft = 7;
+            const secSpan = document.getElementById('countdown-sec');
+            secSpan.textContent = secondsLeft;
+
+            modalCountdownTimer = setInterval(() => {
+                secondsLeft--;
+                secSpan.textContent = secondsLeft;
+                if (secondsLeft <= 0) {
+                    clearInterval(modalCountdownTimer);
+                    startPongNow();
+                }
+            }, 1000);
+        }
+
+        function startPongNow() {
+            if (currentState === APP_STATE.PONG) return;
+            clearInterval(modalCountdownTimer);
+            currentState = APP_STATE.PONG;
+            playPS5Click();
+
+            state4Modal.classList.add('hidden');
+            gtaWrapper.classList.add('hidden');
+            pongContainer.classList.remove('hidden');
+
+            initPong();
+            gameRunning = true;
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Kompletter Reset für einen neuen Video-Take (Taste 'R')
+        function resetEverything() {
+            clearInterval(loadingTimer);
+            clearInterval(glitchInterval);
+            clearInterval(modalCountdownTimer);
+            gameRunning = false;
+
+            currentState = APP_STATE.TITLE;
+            gtaWrapper.classList.remove('hidden', 'glitch-chaos');
+            state1UI.classList.remove('hidden');
+            state2UI.classList.add('hidden');
+            state2UI.classList.remove('flex');
+            state4Modal.classList.add('hidden');
+            pongContainer.classList.add('hidden');
+
+            loadingBarFill.style.width = '0%';
+            loadingPercentText.textContent = '0%';
+            player.score = 0;
+            cpu.score = 0;
+            updateScoreUI();
+        }
+
+        // Klick & Tastatur-Trigger für einfachen Einsatz mit Controller in der Hand
+        gtaWrapper.addEventListener('click', (e) => {
+            if (currentState === APP_STATE.TITLE) {
+                startSequence();
             }
         });
 
-        // --- Pong Game Logic ---
-        
-        // Game variables
-        const paddleWidth = 15;
-        let paddleHeight = 100;
-        let ballSize = 15;
-        
-        const player = { x: 0, y: 0, width: paddleWidth, height: paddleHeight, score: 0, dy: 0, speed: 8 };
-        const cpu = { x: 0, y: 0, width: paddleWidth, height: paddleHeight, score: 0, speed: 5 };
-        const ball = { x: 0, y: 0, size: ballSize, dx: 5, dy: 5, speed: 7 };
+        document.addEventListener('keydown', (e) => {
+            // Wenn gerade im Textfeld des Regie-Menüs getippt wird, keine Shortcuts auslösen
+            if (document.activeElement === customJokeInput) return;
 
-        // Key states
-        const keys = { w: false, s: false, ArrowUp: false, ArrowDown: false };
+            if (e.key === 'c' || e.key === 'C') {
+                toggleDirector();
+                return;
+            }
+            if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen();
+                return;
+            }
+            if (e.key === 'r' || e.key === 'R') {
+                resetEverything();
+                return;
+            }
+            if (e.key === '1') selectPreset(0);
+            if (e.key === '2') selectPreset(1);
+            if (e.key === '3') selectPreset(2);
+
+            // Start / Weiter mit X, Leertaste oder Enter
+            if (e.key === 'x' || e.key === 'X' || e.key === ' ' || e.key === 'Enter') {
+                if (currentState === APP_STATE.TITLE) {
+                    e.preventDefault();
+                    startSequence();
+                } else if (currentState === APP_STATE.CRASH_MODAL) {
+                    e.preventDefault();
+                    startPongNow();
+                }
+            }
+        });
+
+        // =========================================================================
+        // 5. RETRO 1972 PONG SPIEL-ENGINE MIT WITZIGEN KOMMENTAREN
+        // =========================================================================
+        const canvas = document.getElementById('pong-canvas');
+        const ctx = canvas.getContext('2d');
+        const commentaryEl = document.getElementById('pong-commentary');
+        const scorePlayerEl = document.getElementById('score-player');
+        const scoreCpuEl = document.getElementById('score-cpu');
+
+        let gameRunning = false;
+        let screenShakeFrames = 0;
+
+        const funnyWinQuotes = [
+            "TOR FÜR DEN FUX! BESSER ALS GTA 6!",
+            "RAYTRACING BRAUCHT KEIN MENSCH!",
+            "ROCKSTAR SERVER WURDE GEHOPS-GENOMMEN!",
+            "10 VON 10 PUNKTEN AUF METACRITIC!",
+            "ECHTE 8K PIXEL-POWER AUS DEM JAHR 1972!"
+        ];
+
+        const funnyLoseQuotes = [
+            "WASTED! SOGAR IN 1972 VERLOREN!",
+            "ROCKSTAR SERVER SAGT: VERSUCH'S 2038 NOCHMAL!",
+            "LAG! DAS WAR SICHER DER CONTROLLER!",
+            "MISSION FAILED — KEIN VICE CITY FÜR DICH!"
+        ];
+
+        const player = { x: 30, y: 100, width: 16, height: 110, score: 0, speed: 9 };
+        const cpu = { x: 0, y: 100, width: 16, height: 110, score: 0, speed: 6 };
+        const ball = { x: 0, y: 0, size: 16, dx: 7, dy: 5, speed: 8, trail: [] };
+
+        const keys = { w: false, s: false, W: false, S: false, ArrowUp: false, ArrowDown: false };
 
         function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            // Adjust sizes for mobile
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width || window.innerWidth;
+            canvas.height = rect.height || (window.innerHeight - 120);
+
             if (canvas.width < 768) {
-                paddleHeight = 80;
-                ballSize = 10;
-                player.width = cpu.width = 10;
+                player.height = cpu.height = 85;
+                player.width = cpu.width = 12;
+                ball.size = 12;
             } else {
-                paddleHeight = 120;
-                ballSize = 15;
-                player.width = cpu.width = 15;
+                player.height = cpu.height = 115;
+                player.width = cpu.width = 16;
+                ball.size = 16;
             }
 
-            player.height = cpu.height = paddleHeight;
-            ball.size = ballSize;
-
-            // Reset positions on resize
-            player.x = 20;
-            player.y = canvas.height / 2 - player.height / 2;
-            cpu.x = canvas.width - 20 - cpu.width;
-            cpu.y = canvas.height / 2 - cpu.height / 2;
-            
-            if(!gameRunning) {
-                resetBall();
-            }
+            player.x = 28;
+            cpu.x = canvas.width - 28 - cpu.width;
         }
 
-        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('resize', () => {
+            if (currentState === APP_STATE.PONG) resizeCanvas();
+        });
 
         function initPong() {
             resizeCanvas();
+            player.y = canvas.height / 2 - player.height / 2;
+            cpu.y = canvas.height / 2 - cpu.height / 2;
             resetBall();
-            
-            // Input Listeners
-            document.addEventListener('keydown', (e) => {
-                if (keys.hasOwnProperty(e.key)) {
-                    keys[e.key] = true;
-                }
-            });
-            
-            document.addEventListener('keyup', (e) => {
-                if (keys.hasOwnProperty(e.key)) {
-                    keys[e.key] = false;
-                }
-            });
-
-            // Touch support for mobile devices
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault(); // Prevent scrolling
-                const touchY = e.touches[0].clientY;
-                // Center paddle to finger
-                player.y = touchY - player.height / 2;
-                
-                // Boundaries
-                if (player.y < 0) player.y = 0;
-                if (player.y + player.height > canvas.height) player.y = canvas.height - player.height;
-            }, { passive: false });
         }
+
+        // Tastatur-, Maus- und Touch-Steuerung für Pong
+        document.addEventListener('keydown', (e) => {
+            if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (currentState !== APP_STATE.PONG) return;
+            const rect = canvas.getBoundingClientRect();
+            const mouseY = e.clientY - rect.top;
+            player.y = Math.max(0, Math.min(canvas.height - player.height, mouseY - player.height / 2));
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (currentState !== APP_STATE.PONG) return;
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touchY = e.touches[0].clientY - rect.top;
+            player.y = Math.max(0, Math.min(canvas.height - player.height, touchY - player.height / 2));
+        }, { passive: false });
 
         function resetBall() {
-            ball.x = canvas.width / 2;
-            ball.y = canvas.height / 2;
-            // Random initial direction
-            ball.dx = (Math.random() > 0.5 ? 1 : -1) * ball.speed;
-            ball.dy = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 3 + 3);
+            ball.x = canvas.width / 2 - ball.size / 2;
+            ball.y = canvas.height / 2 - ball.size / 2;
+            ball.trail = [];
+            const dirX = Math.random() > 0.5 ? 1 : -1;
+            const dirY = (Math.random() * 2 - 1) * 5;
+            ball.dx = dirX * ball.speed;
+            ball.dy = dirY;
         }
 
-        function update() {
-            // Player Movement via Keyboard
-            if (keys.w || keys.ArrowUp) {
-                player.y -= player.speed;
-            }
-            if (keys.s || keys.ArrowDown) {
-                player.y += player.speed;
-            }
+        function updateScoreUI() {
+            scorePlayerEl.textContent = player.score;
+            scoreCpuEl.textContent = cpu.score;
+        }
 
-            // Player Bounds
-            if (player.y < 0) player.y = 0;
-            if (player.y + player.height > canvas.height) player.y = canvas.height - player.height;
+        function updatePong() {
+            // Spieler Bewegung
+            if (keys.w || keys.W || keys.ArrowUp) player.y -= player.speed;
+            if (keys.s || keys.S || keys.ArrowDown) player.y += player.speed;
+            player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
 
-            // CPU AI (Simple tracking)
-            let cpuCenter = cpu.y + cpu.height / 2;
-            if (cpuCenter < ball.y - 10) {
-                cpu.y += cpu.speed;
-            } else if (cpuCenter > ball.y + 10) {
-                cpu.y -= cpu.speed;
-            }
+            // CPU Bewegung
+            const cpuCenter = cpu.y + cpu.height / 2;
+            if (cpuCenter < ball.y - 12) cpu.y += cpu.speed;
+            else if (cpuCenter > ball.y + 12) cpu.y -= cpu.speed;
+            cpu.y = Math.max(0, Math.min(canvas.height - cpu.height, cpu.y));
 
-            // CPU Bounds
-            if (cpu.y < 0) cpu.y = 0;
-            if (cpu.y + cpu.height > canvas.height) cpu.y = canvas.height - cpu.height;
+            // Ball Spur speichern für coolen Retro-Look
+            ball.trail.push({ x: ball.x, y: ball.y });
+            if (ball.trail.length > 6) ball.trail.shift();
 
-            // Ball Movement
             ball.x += ball.dx;
             ball.y += ball.dy;
 
-            // Wall Collisions (Top / Bottom)
-            if (ball.y <= 0 || ball.y + ball.size >= canvas.height) {
+            // Oben / Unten Abprallen
+            if (ball.y <= 0) {
+                ball.y = 0;
                 ball.dy *= -1;
+                playPongBeep(320, 0.05);
+            } else if (ball.y + ball.size >= canvas.height) {
+                ball.y = canvas.height - ball.size;
+                ball.dy *= -1;
+                playPongBeep(320, 0.05);
             }
 
-            // Paddle Collisions
-            // Player Paddle
-            if (ball.dx < 0) {
-                if (ball.x <= player.x + player.width && 
-                    ball.x + ball.size >= player.x &&
-                    ball.y + ball.size >= player.y && 
-                    ball.y <= player.y + player.height) {
-                    
-                    ball.dx *= -1;
-                    // Add some english/spin based on where it hits
-                    let hitPoint = (ball.y + ball.size/2) - (player.y + player.height/2);
-                    ball.dy = hitPoint * 0.2;
-                    ball.x = player.x + player.width; // Prevent sticking
-                }
-            } 
-            // CPU Paddle
-            else {
-                if (ball.x + ball.size >= cpu.x && 
-                    ball.x <= cpu.x + cpu.width &&
-                    ball.y + ball.size >= cpu.y && 
-                    ball.y <= cpu.y + cpu.height) {
-                    
-                    ball.dx *= -1;
-                    let hitPoint = (ball.y + ball.size/2) - (cpu.y + cpu.height/2);
-                    ball.dy = hitPoint * 0.2;
-                    ball.x = cpu.x - ball.size; // Prevent sticking
-                }
+            // Schläger-Kollision Links (Der lächelnde Fux)
+            if (ball.dx < 0 &&
+                ball.x <= player.x + player.width &&
+                ball.x + ball.size >= player.x &&
+                ball.y + ball.size >= player.y &&
+                ball.y <= player.y + player.height) {
+                
+                ball.dx = Math.abs(ball.dx) * 1.04;
+                const hitOffset = (ball.y + ball.size / 2) - (player.y + player.height / 2);
+                ball.dy = hitOffset * 0.22;
+                ball.x = player.x + player.width;
+                playPongBeep(660, 0.08);
             }
 
-            // Scoring
+            // Schläger-Kollision Rechts (Rockstar Server)
+            if (ball.dx > 0 &&
+                ball.x + ball.size >= cpu.x &&
+                ball.x <= cpu.x + cpu.width &&
+                ball.y + ball.size >= cpu.y &&
+                ball.y <= cpu.y + cpu.height) {
+                
+                ball.dx = -Math.abs(ball.dx) * 1.04;
+                const hitOffset = (ball.y + ball.size / 2) - (cpu.y + cpu.height / 2);
+                ball.dy = hitOffset * 0.22;
+                ball.x = cpu.x - ball.size;
+                playPongBeep(520, 0.08);
+            }
+
+            // Punkt erzielt!
             if (ball.x < 0) {
                 cpu.score++;
+                updateScoreUI();
+                playPongBeep(150, 0.28, 'sawtooth');
+                screenShakeFrames = 10;
+                commentaryEl.textContent = funnyLoseQuotes[Math.floor(Math.random() * funnyLoseQuotes.length)];
+                commentaryEl.className = "relative z-20 text-center py-2 pong-font text-xs md:text-base text-red-400 tracking-wider min-h-[2.2rem]";
                 resetBall();
             } else if (ball.x > canvas.width) {
                 player.score++;
+                updateScoreUI();
+                playPongBeep(880, 0.22, 'square');
+                screenShakeFrames = 10;
+                commentaryEl.textContent = funnyWinQuotes[Math.floor(Math.random() * funnyWinQuotes.length)];
+                commentaryEl.className = "relative z-20 text-center py-2 pong-font text-xs md:text-base text-emerald-300 tracking-wider min-h-[2.2rem]";
                 resetBall();
             }
         }
 
-        function draw() {
-            // Clear Canvas
-            ctx.fillStyle = 'black';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        function drawPong() {
+            ctx.save();
+            if (screenShakeFrames > 0) {
+                const dx = (Math.random() - 0.5) * 12;
+                const dy = (Math.random() - 0.5) * 12;
+                ctx.translate(dx, dy);
+                screenShakeFrames--;
+            }
 
-            // Draw center dashed line
-            ctx.strokeStyle = 'white';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Retro Mittellinie
+            ctx.strokeStyle = 'rgba(52, 211, 153, 0.45)';
             ctx.lineWidth = 4;
-            ctx.setLineDash([15, 15]);
+            ctx.setLineDash([16, 16]);
             ctx.beginPath();
             ctx.moveTo(canvas.width / 2, 0);
             ctx.lineTo(canvas.width / 2, canvas.height);
             ctx.stroke();
-            ctx.setLineDash([]); // Reset
+            ctx.setLineDash([]);
 
-            // Draw Paddles
-            ctx.fillStyle = 'white';
+            // Wasserzeichen in der Mitte des Spielfelds
+            ctx.fillStyle = 'rgba(52, 211, 153, 0.08)';
+            ctx.font = "bold 28px 'Press Start 2P', monospace";
+            ctx.textAlign = 'center';
+            ctx.fillText("GTA VI - 1972", canvas.width / 2, canvas.height / 2);
+
+            // Ball Schweif
+            ball.trail.forEach((pos, idx) => {
+                const alpha = ((idx + 1) / ball.trail.length) * 0.35;
+                ctx.fillStyle = `rgba(52, 211, 153, ${alpha})`;
+                ctx.fillRect(pos.x, pos.y, ball.size, ball.size);
+            });
+
+            // Schläger & Ball im leuchtenden Arcade-Grün/Weiß
+            ctx.shadowColor = '#34d399';
+            ctx.shadowBlur = 15;
+            ctx.fillStyle = '#ecfdf5';
             ctx.fillRect(player.x, player.y, player.width, player.height);
             ctx.fillRect(cpu.x, cpu.y, cpu.width, cpu.height);
-
-            // Draw Ball
             ctx.fillRect(ball.x, ball.y, ball.size, ball.size);
+            ctx.shadowBlur = 0;
 
-            // Draw Scores
-            ctx.fillStyle = 'white';
-            ctx.font = "40px 'Press Start 2P', Courier, monospace";
-            ctx.textAlign = "center";
-            ctx.fillText(player.score, canvas.width / 4, 80);
-            ctx.fillText(cpu.score, 3 * canvas.width / 4, 80);
+            ctx.restore();
         }
 
         function gameLoop() {
             if (!gameRunning) return;
-            update();
-            draw();
+            updatePong();
+            drawPong();
             requestAnimationFrame(gameLoop);
         }
     </script>
